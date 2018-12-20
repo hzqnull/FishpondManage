@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="3dp"
+    android:paddingTop="3dp"
+    >
+
+    <RelativeLayout
+        android:id="@+id/tab_status"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/tab_status_img"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_status"
+            android:layout_marginTop="5dp"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:id="@+id/tab_status_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="状态"
+            android:layout_below="@id/tab_status_img"
+            android:layout_marginTop="2dp"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/tab_setting"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/tab_setting_img"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_setting"
+            android:layout_marginTop="5dp"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:id="@+id/tab_setting_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="设置"
+            android:layout_below="@id/tab_setting_img"
+            android:layout_marginTop="2dp"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/tab_me"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/tab_me_img"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_me"
+            android:layout_marginTop="5dp"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:id="@+id/tab_me_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="我的"
+            android:layout_below="@id/tab_me_img"
+            android:layout_marginTop="2dp"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
+
+</LinearLayout>
