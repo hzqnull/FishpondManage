@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#018ff1</color>
+    <color name="btn_pressed_bg">#0164cc</color>
     <color name="colorPrimaryDark">#018ff1</color>
     <color name="colorAccent">#FF4081</color>
     <color name="gray">#737373</color>
@@ -9,5 +10,6 @@
     <color name="black">#000</color>
     <color name="bule">#018ff1</color>
     <color name="status_bg">#88629ce9</color>
-    <color name="value_bg">#881c7538</color>
+    <color name="value_bg">#66ffffff</color>
+    <color name="value_warn_bg">#ff5555</color>
 </resources>

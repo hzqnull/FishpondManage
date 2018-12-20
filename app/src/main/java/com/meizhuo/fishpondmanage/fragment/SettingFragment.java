@@ -59,6 +59,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
     private EditText metMaxPH;
     private EditText metMinWaterDepth;
     private EditText metMaxWaterDepth;
+    private Button mbtnFocusable;//用于获取焦点，使其他输入框失去焦点
 
     private Thread updateData; //更新数据的线程
 
@@ -148,7 +149,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
      */
     private void setMinMax() {
         Random random = new Random();
-        metMaxTemp.setText(String.valueOf(random.nextInt(19) + 10));
+        metMaxTemp.setText(String.valueOf(random.nextInt(10) + 19));
     }
 
     @Override
@@ -176,6 +177,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
         metMaxPH = view.findViewById(R.id.et_ph_max);
         metMinWaterDepth = view.findViewById(R.id.et_water_depth_min);
         metMaxWaterDepth = view.findViewById(R.id.et_water_depth_max);
+        mbtnFocusable = view.findViewById(R.id.btn_focusable);
 
         mbtnSetTemp.setOnClickListener(this);
         mbtnSetTur.setOnClickListener(this);
@@ -231,6 +233,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
         switch (view.getId()) {
             case R.id.btn_set_temperature: //设置温度警戒值
                 sendPostOkHttpRequest("temmin", "temmax", metMinTemp.getText().toString(), metMaxTemp.getText().toString());
+                mbtnFocusable.setFocusable(true);
                 break;
             case R.id.btn_set_turbidity:
                 sendPostOkHttpRequest("turmin", "turmax", metMinTur.getText().toString(), metMaxTur.getText().toString());
@@ -242,20 +245,19 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
                 sendPostOkHttpRequest("phmin", "phmax", metMinPH.getText().toString(), metMaxPH.getText().toString());
                 break;
             case R.id.btn_set_water_depth:
-
+                Toast.makeText(getContext(), "设置成功", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_set_oxygen_pump:
-
+                Toast.makeText(getContext(), "氧气泵", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_set_lift_pump:
-
+                Toast.makeText(getContext(), "抽水泵", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_set_waterflood_pump:
-
+                Toast.makeText(getContext(), "注水泵", Toast.LENGTH_SHORT).show();
                 break;
-
             case R.id.btn_set_feed:
-
+                Toast.makeText(getContext(), "投食", Toast.LENGTH_SHORT).show();
                 break;
             default:
                 break;
@@ -301,10 +303,16 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
                         @Override
                         public void onResponse(Object response, int id) {
                             Toast.makeText(getContext(), "设置成功", Toast.LENGTH_SHORT).show();
-                            InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                            if (imm != null) {
-                                if (imm.isActive()) {
-                                    imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS); //收起软键盘
+
+                            //收起软键盘
+                            Context context = getContext();
+                            InputMethodManager imm = null;
+                            if (context != null) {
+                                imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                                if (imm != null) {
+                                    if (imm.isActive()) {
+                                        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+                                    }
                                 }
                             }
                         }

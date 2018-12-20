@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="15dp">
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="5dp">
 
         <TextView
             android:layout_width="0dp"
@@ -19,13 +20,14 @@
             android:layout_weight="5"
             android:text="@string/current_value"
             android:textSize="20sp"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
+            android:paddingLeft="50dp"
             android:gravity="center"/>
 
         <!--<View-->
             <!--android:layout_width="1dp"-->
             <!--android:layout_height="match_parent"-->
-            <!--android:background="@color/black"/>-->
+            <!--android:background="@color/white"/>-->
 
         <TextView
             android:layout_width="0dp"
@@ -33,14 +35,16 @@
             android:layout_weight="2"
             android:text="@string/current_status"
             android:textSize="20sp"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:gravity="center"/>
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/black"/>
+        android:layout_height="0.1dp"
+        android:background="@color/white"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -64,7 +68,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/temperature"
                     android:textSize="20sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <TextView
@@ -72,10 +76,10 @@
                     android:layout_width="0dp"
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
-                    android:background="@color/value_bg"
+                    android:background="@drawable/shape_tv_bg"
                     android:text="33.2"
                     android:textSize="20sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <TextView
@@ -83,7 +87,7 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="@string/selsius"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"/>
@@ -102,11 +106,11 @@
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
                     android:text="@string/normal"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:background="@color/status_bg"
+                    android:background="@drawable/shape_tv_bg"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"/>
             </LinearLayout>
@@ -130,7 +134,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/turbidity"
                     android:textSize="20sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <TextView
@@ -138,10 +142,10 @@
                     android:layout_width="0dp"
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
-                    android:background="@color/value_bg"
+                    android:background="@drawable/shape_tv_bg"
                     android:text="5.2"
                     android:textSize="20sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <TextView
@@ -149,7 +153,7 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="%"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"/>
@@ -168,11 +172,11 @@
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
                     android:text="@string/normal"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:background="@color/status_bg"
+                    android:background="@drawable/shape_tv_bg"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"/>
             </LinearLayout>
@@ -196,7 +200,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/oxygen"
                     android:textSize="20sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <TextView
@@ -204,10 +208,10 @@
                     android:layout_width="0dp"
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
-                    android:background="@color/value_bg"
+                    android:background="@drawable/shape_tv_bg"
                     android:text="5.9"
                     android:textSize="20sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <TextView
@@ -215,7 +219,7 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="mg/L"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"/>
@@ -234,11 +238,11 @@
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
                     android:text="@string/normal"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:background="@color/status_bg"
+                    android:background="@drawable/shape_tv_bg"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"/>
             </LinearLayout>
@@ -262,7 +266,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/ph"
                     android:textSize="20sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <TextView
@@ -270,17 +274,17 @@
                     android:layout_width="0dp"
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
-                    android:background="@color/value_bg"
+                    android:background="@drawable/shape_tv_bg"
                     android:text="7.1"
                     android:textSize="20sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"/>
@@ -299,11 +303,11 @@
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
                     android:text="@string/normal"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:background="@color/status_bg"
+                    android:background="@drawable/shape_tv_bg"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"/>
             </LinearLayout>
@@ -327,7 +331,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/water_depth"
                     android:textSize="20sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <TextView
@@ -335,10 +339,10 @@
                     android:layout_width="0dp"
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
-                    android:background="@color/value_bg"
+                    android:background="@drawable/shape_tv_bg"
                     android:text="23"
                     android:textSize="20sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <TextView
@@ -346,7 +350,7 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="cm"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"/>
@@ -365,11 +369,11 @@
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
                     android:text="@string/normal"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:background="@color/status_bg"
+                    android:background="@drawable/shape_tv_bg"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"/>
             </LinearLayout>
@@ -380,9 +384,11 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/black"
-        android:layout_marginTop="20dp"/>
+        android:layout_height="0.1dp"
+        android:background="@color/white"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"/>
 
     <!--监控及位置-->
     <LinearLayout
@@ -400,19 +406,21 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:text="定位信息"
-                android:gravity="center"
+                android:gravity="left"
+                android:paddingLeft="37dp"
+                android:paddingStart="37dp"
                 android:textSize="20sp"
-                android:textColor="@color/black"/>
+                android:textColor="@color/white"/>
 
             <TextView
                 android:id="@+id/tv_location_value"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:background="@color/value_bg"
+                android:background="@drawable/shape_tv_bg"
                 android:text="23.7N 116E"
                 android:textSize="20sp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:gravity="center"
                 android:layout_marginRight="20dp"
                 android:layout_marginEnd="20dp"/>
@@ -425,41 +433,45 @@
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight="2"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="left"
+                android:paddingLeft="37dp"
+                android:paddingStart="37dp"
                 android:text="传感器深度"
-                android:gravity="center"
-                android:textSize="20sp"
-                android:textColor="@color/black"/>
+                android:textColor="@color/white"
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/tv_sensor_depth"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="60dp"
-                android:background="@color/value_bg"
+                android:layout_weight="1"
+                android:background="@drawable/shape_tv_bg"
+                android:gravity="center"
                 android:text="100"
-                android:textSize="20sp"
-                android:textColor="@color/black"
-                android:gravity="center" />
+                android:textColor="@color/white"
+                android:textSize="20sp" />
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="m"
-                android:textSize="16sp"
                 android:layout_marginLeft="10dp"
-                android:textColor="@color/black"/>
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:text="m"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
 
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/black"
-            android:layout_marginTop="20dp"/>
+            android:layout_height="0.1dp"
+            android:background="@color/white"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -473,7 +485,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="视频监控"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="20sp"/>
 
             <Button
@@ -483,7 +495,7 @@
                 android:layout_weight="1"
                 android:text="连接"
                 android:textSize="18sp"
-                android:background="@color/colorPrimary"
+                android:background="@drawable/selector_btn_bg"
                 android:textColor="@color/white"
                 android:layout_marginLeft="50dp"
                 android:layout_marginRight="50dp" />

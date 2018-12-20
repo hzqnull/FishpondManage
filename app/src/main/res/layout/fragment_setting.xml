@@ -18,7 +18,8 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp">
 
                 <TextView
                     android:layout_width="0dp"
@@ -26,7 +27,7 @@
                     android:layout_height="wrap_content"
                     android:text="参数"
                     android:textSize="20sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <LinearLayout
@@ -39,7 +40,7 @@
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:text="下限"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textSize="20sp"
                         android:gravity="center"/>
 
@@ -48,22 +49,26 @@
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:text="上限"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textSize="20sp"
                         android:gravity="center"/>
                 </LinearLayout>
 
-                <TextView
+                <Button
+                    android:id="@+id/btn_focusable"
                     android:layout_width="0dp"
                     android:layout_weight="2"
-                    android:layout_height="wrap_content"
+                    android:layout_height="10dp"
+                    android:background="#00000000"
                     android:layout_marginLeft="15dp"/>
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/black"/>
+                android:layout_height="0.11dp"
+                android:background="@color/white"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -76,7 +81,7 @@
                     android:layout_height="wrap_content"
                     android:text="温度警戒值"
                     android:textSize="18sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <LinearLayout
@@ -91,10 +96,10 @@
                         android:layout_height="30dp"
                         android:layout_marginLeft="4dp"
                         android:layout_marginRight="4dp"
-                        android:background="@color/value_bg"
+                        android:background="@drawable/shape_tv_bg"
                         android:inputType="numberDecimal"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textSize="18sp"
                         android:text="18"/>
 
@@ -106,9 +111,9 @@
                         android:layout_marginLeft="4dp"
                         android:layout_marginRight="4dp"
                         android:inputType="numberDecimal"
-                        android:background="@color/value_bg"
+                        android:background="@drawable/shape_tv_bg"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textSize="18sp"
                         android:text="18"/>
                 </LinearLayout>
@@ -118,16 +123,15 @@
                     android:layout_weight="1"
                     android:layout_height="30dp"
                     android:text="°C"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="14sp"/>
 
                 <Button
                     android:id="@+id/btn_set_temperature"
-                    android:focusableInTouchMode="true"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="30dp"
-                    android:background="@color/colorPrimary"
+                    android:background="@drawable/selector_btn_bg"
                     android:text="设置"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="10dp"
@@ -147,7 +151,7 @@
                     android:layout_height="wrap_content"
                     android:text="浊度警戒值"
                     android:textSize="18sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <LinearLayout
@@ -163,9 +167,9 @@
                         android:layout_marginLeft="4dp"
                         android:inputType="numberDecimal"
                         android:layout_marginRight="4dp"
-                        android:background="@color/value_bg"
+                        android:background="@drawable/shape_tv_bg"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textSize="18sp"
                         android:text="18"/>
 
@@ -177,9 +181,9 @@
                         android:inputType="numberDecimal"
                         android:layout_marginLeft="4dp"
                         android:layout_marginRight="4dp"
-                        android:background="@color/value_bg"
+                        android:background="@drawable/shape_tv_bg"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textSize="18sp"
                         android:text="18"/>
                 </LinearLayout>
@@ -189,16 +193,15 @@
                     android:layout_weight="1"
                     android:layout_height="30dp"
                     android:text="%"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="14sp"/>
 
                 <Button
                     android:id="@+id/btn_set_turbidity"
-                    android:focusableInTouchMode="true"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="30dp"
-                    android:background="@color/colorPrimary"
+                    android:background="@drawable/selector_btn_bg"
                     android:text="设置"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="10dp"
@@ -218,7 +221,7 @@
                     android:layout_height="wrap_content"
                     android:text="含氧警戒值"
                     android:textSize="18sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <LinearLayout
@@ -234,9 +237,9 @@
                         android:layout_marginLeft="4dp"
                         android:inputType="numberDecimal"
                         android:layout_marginRight="4dp"
-                        android:background="@color/value_bg"
+                        android:background="@drawable/shape_tv_bg"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textSize="18sp"
                         android:text="18"/>
 
@@ -248,9 +251,9 @@
                         android:layout_marginLeft="4dp"
                         android:layout_marginRight="4dp"
                         android:inputType="numberDecimal"
-                        android:background="@color/value_bg"
+                        android:background="@drawable/shape_tv_bg"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textSize="18sp"
                         android:text="18"/>
                 </LinearLayout>
@@ -260,16 +263,15 @@
                     android:layout_weight="1"
                     android:layout_height="30dp"
                     android:text="mg/L"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="14sp"/>
 
                 <Button
                     android:id="@+id/btn_set_oxygen"
-                    android:focusableInTouchMode="true"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="30dp"
-                    android:background="@color/colorPrimary"
+                    android:background="@drawable/selector_btn_bg"
                     android:text="设置"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="10dp"
@@ -289,7 +291,7 @@
                     android:layout_height="wrap_content"
                     android:text="PH警戒值"
                     android:textSize="18sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <LinearLayout
@@ -305,9 +307,9 @@
                         android:layout_marginLeft="4dp"
                         android:inputType="numberDecimal"
                         android:layout_marginRight="4dp"
-                        android:background="@color/value_bg"
+                        android:background="@drawable/shape_tv_bg"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textSize="18sp"
                         android:text="18"/>
 
@@ -319,9 +321,9 @@
                         android:inputType="numberDecimal"
                         android:layout_marginLeft="4dp"
                         android:layout_marginRight="4dp"
-                        android:background="@color/value_bg"
+                        android:background="@drawable/shape_tv_bg"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textSize="18sp"
                         android:text="18"/>
                 </LinearLayout>
@@ -331,16 +333,15 @@
                     android:layout_weight="1"
                     android:layout_height="30dp"
                     android:text=""
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="14sp"/>
 
                 <Button
                     android:id="@+id/btn_set_ph"
-                    android:focusableInTouchMode="true"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="30dp"
-                    android:background="@color/colorPrimary"
+                    android:background="@drawable/selector_btn_bg"
                     android:text="设置"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="10dp"
@@ -360,7 +361,7 @@
                     android:layout_height="wrap_content"
                     android:text="水深警戒值"
                     android:textSize="18sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <LinearLayout
@@ -376,9 +377,9 @@
                         android:layout_marginLeft="4dp"
                         android:inputType="numberDecimal"
                         android:layout_marginRight="4dp"
-                        android:background="@color/value_bg"
+                        android:background="@drawable/shape_tv_bg"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textSize="18sp"
                         android:text="18"/>
 
@@ -389,9 +390,9 @@
                         android:layout_height="30dp"
                         android:layout_marginLeft="4dp"
                         android:layout_marginRight="4dp"
-                        android:background="@color/value_bg"
+                        android:background="@drawable/shape_tv_bg"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textSize="18sp"
                         android:inputType="numberDecimal"
                         android:text="18"/>
@@ -402,16 +403,15 @@
                     android:layout_weight="1"
                     android:layout_height="30dp"
                     android:text="cm"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="14sp"/>
 
                 <Button
                     android:id="@+id/btn_set_water_depth"
-                    android:focusableInTouchMode="true"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="30dp"
-                    android:background="@color/colorPrimary"
+                    android:background="@drawable/selector_btn_bg"
                     android:text="设置"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="10dp"
@@ -426,13 +426,15 @@
                 android:layout_marginTop="30dp"
                 android:text="鱼塘开关"
                 android:textSize="20sp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:gravity="center"/>
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/black"/>
+                android:layout_height="0.1dp"
+                android:background="@color/white"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -445,16 +447,15 @@
                     android:layout_height="wrap_content"
                     android:text="@string/oxygen_pump"
                     android:textSize="20dp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <Button
                     android:id="@+id/btn_set_oxygen_pump"
-                    android:focusableInTouchMode="true"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="35dp"
-                    android:background="@color/colorPrimary"
+                    android:background="@drawable/selector_btn_bg"
                     android:text="已开启"
                     android:textColor="@color/white"
                     android:textSize="18sp"
@@ -474,7 +475,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/lift_pump"
                     android:textSize="20dp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <Button
@@ -483,7 +484,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="35dp"
-                    android:background="@color/colorPrimary"
+                    android:background="@drawable/selector_btn_bg"
                     android:text="已开启"
                     android:textColor="@color/white"
                     android:textSize="18sp"
@@ -503,16 +504,15 @@
                     android:layout_height="wrap_content"
                     android:text="@string/waterflood_pump"
                     android:textSize="20dp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <Button
                     android:id="@+id/btn_set_waterflood_pump"
-                    android:focusableInTouchMode="true"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="35dp"
-                    android:background="@color/colorPrimary"
+                    android:background="@drawable/selector_btn_bg"
                     android:text="已开启"
                     android:textColor="@color/white"
                     android:textSize="18sp"
@@ -523,9 +523,11 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/black"
-                android:layout_marginTop="10dp"/>
+                android:layout_height="0.1dp"
+                android:background="@color/white"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -538,7 +540,7 @@
                     android:layout_height="wrap_content"
                     android:text="投食"
                     android:textSize="20sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <EditText
@@ -548,9 +550,10 @@
                     android:layout_weight="1"
                     android:layout_height="30dp"
                     android:text="2.5"
+                    android:textColor="@color/white"
                     android:gravity="center"
                     android:textSize="20sp"
-                    android:background="@color/value_bg" />
+                    android:background="@drawable/shape_tv_bg" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -559,17 +562,18 @@
                     android:text="kg"
                     android:layout_marginLeft="5dp"
                     android:textSize="18sp"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/white"/>
 
                 <EditText
                     android:id="@+id/et_feed_delay_time"
                     android:layout_width="0dp"
                     android:layout_height="30dp"
                     android:layout_weight="1"
-                    android:background="@color/value_bg"
+                    android:background="@drawable/shape_tv_bg"
                     android:gravity="center"
                     android:inputType="numberDecimal"
                     android:text="0"
+                    android:textColor="@color/white"
                     android:textSize="20sp"/>
 
                 <TextView
@@ -578,16 +582,15 @@
                     android:layout_height="30dp"
                     android:text="小时后"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:layout_marginLeft="5dp"/>
 
                 <Button
                     android:id="@+id/btn_set_feed"
-                    android:focusableInTouchMode="true"
                     android:layout_width="0dp"
                     android:layout_height="30dp"
                     android:layout_weight="1"
-                    android:background="@color/colorPrimary"
+                    android:background="@drawable/selector_btn_bg"
                     android:layout_marginRight="10dp"
                     android:text="设置"
                     android:textSize="20sp"

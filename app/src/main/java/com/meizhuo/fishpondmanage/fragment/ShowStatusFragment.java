@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
@@ -62,7 +63,6 @@ public class ShowStatusFragment extends Fragment {
     private TextView mtvSensorDepth;
     private Button mbtnConnectMonitor;
 
-    private NetworkChangeReceiver networkChangeReceiver;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -71,6 +71,7 @@ public class ShowStatusFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     Thread updateData; //更新数据线程
     private boolean hasWarn = false;//用来判断是否已有警告通知的flag
+    private boolean exit = false; //标记是否fragment被销毁
 
     public ShowStatusFragment() {
         // Required empty public constructor
@@ -106,7 +107,7 @@ public class ShowStatusFragment extends Fragment {
         updateData = new Thread(new Runnable() {
             @Override
             public void run() {
-                while ( true ) {
+                while ( !exit ) {
                     if ( !MainActivity.stopUpdateData ) { //判断是否要刷新
                         sendOkHttpRequest();
                         Log.i(TAG, "run: " + "我刷。。。");
@@ -120,14 +121,12 @@ public class ShowStatusFragment extends Fragment {
             }
         });
         updateData.start();
+    }
 
-        //设置网络变化监听广播
-        networkChangeReceiver = new NetworkChangeReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        if (getContext() != null) {
-            getContext().registerReceiver(networkChangeReceiver, filter);
-        }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        exit = true; //fragment被销毁，线程结束
     }
 
     /**
@@ -158,7 +157,7 @@ public class ShowStatusFragment extends Fragment {
                         updateUI(); //刷新获得新数据后进行显示
                         //测试用
                         Random random = new Random();
-                        int num = random.nextInt(20) + 20;
+                        int num = random.nextInt(24) + 15;
                         Log.i(TAG, "onResponse: " + "随机温度为" + num);
                         mtvTem.setText(String.valueOf(num));
 
@@ -190,8 +189,12 @@ public class ShowStatusFragment extends Fragment {
         }
 
         if (tem > 33) { //数据异常
-            mtvTemStatus.setBackgroundColor(Color.RED);
-            mtvTemStatus.setText("异常");
+            if (isAdded()) { //activity重建后，没有context，使用getResource会报错
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mtvTemStatus.setBackground(getResources().getDrawable(R.drawable.shape_tv_warn_bg)); //背景变红
+                }
+                mtvTemStatus.setText("异常");
+            }
             //发送“数据异常”通知
             if (context != null) {
                 //创建一个通知
@@ -213,7 +216,11 @@ public class ShowStatusFragment extends Fragment {
 
         } else { //数据正常
             mtvTemStatus.setText("正常");
-            mtvTemStatus.setBackgroundColor(getResources().getColor(R.color.status_bg));
+            if (isAdded()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mtvTemStatus.setBackground(getResources().getDrawable(R.drawable.shape_tv_bg)); //activity重建后，没有context，使用getResource会报错
+                }
+            }
             if (notificationManager != null) {
                 notificationManager.cancel(1); //数据恢复正常，取消通知
             }
@@ -275,15 +282,6 @@ public class ShowStatusFragment extends Fragment {
         mListener = null;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Context context = getContext();
-        if (context != null) {
-            context.unregisterReceiver(networkChangeReceiver); //取消注册广播
-        }
-    }
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -300,18 +298,5 @@ public class ShowStatusFragment extends Fragment {
         void onFragmentInteraction(String str);
     }
 
-    class NetworkChangeReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (NetworkUtils.isNetworkConnected(getContext())) {
-                //网络已连接，定时刷新开启
-                Log.i(TAG, "onReceive: " + "开始刷新");
-                MainActivity.stopUpdateData = false;
-            } else {
-                //网络已断开，定时刷新关闭
-                Log.i(TAG, "onReceive: " + "停止刷新");
-                MainActivity.stopUpdateData = true;
-            }
-        }
-    }
+
 }

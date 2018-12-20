@@ -8,6 +8,7 @@ import android.drm.DrmStore;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
@@ -16,6 +17,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -30,6 +33,8 @@ import com.meizhuo.fishpondmanage.utils.NetworkUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 public class MainActivity extends AppCompatActivity implements
         ShowStatusFragment.OnFragmentInteractionListener,
@@ -103,23 +108,23 @@ public class MainActivity extends AppCompatActivity implements
                         tabSettingImg.setImageResource(R.drawable.ic_setting);
                         tabMeImg.setImageResource(R.drawable.ic_me);
                         tabStatusText.setTextColor(Color.parseColor("#018ff1"));
-                        tabSettingText.setTextColor(Color.parseColor("#737373"));
-                        tabMeText.setTextColor(Color.parseColor("#737373"));
+                        tabSettingText.setTextColor(Color.parseColor("#dbdbdb"));
+                        tabMeText.setTextColor(Color.parseColor("#dbdbdb"));
                         break;
                     case 1:
                         tabStatusImg.setImageResource(R.drawable.ic_status);
                         tabSettingImg.setImageResource(R.drawable.ic_setting_selected);
                         tabMeImg.setImageResource(R.drawable.ic_me);
-                        tabStatusText.setTextColor(Color.parseColor("#737373"));
+                        tabStatusText.setTextColor(Color.parseColor("#dbdbdb"));
                         tabSettingText.setTextColor(Color.parseColor("#018ff1"));
-                        tabMeText.setTextColor(Color.parseColor("#737373"));
+                        tabMeText.setTextColor(Color.parseColor("#dbdbdb"));
                         break;
                     case 2:
                         tabStatusImg.setImageResource(R.drawable.ic_status);
                         tabSettingImg.setImageResource(R.drawable.ic_setting);
                         tabMeImg.setImageResource(R.drawable.ic_me_selected);
-                        tabStatusText.setTextColor(Color.parseColor("#737373"));
-                        tabSettingText.setTextColor(Color.parseColor("#737373"));
+                        tabStatusText.setTextColor(Color.parseColor("#dbdbdb"));
+                        tabSettingText.setTextColor(Color.parseColor("#dbdbdb"));
                         tabMeText.setTextColor(Color.parseColor("#018ff1"));
                         break;
                     default:
@@ -133,14 +138,25 @@ public class MainActivity extends AppCompatActivity implements
         });//为ViewPager添加当前item变换监听器
         viewPager.setOffscreenPageLimit(viewPagerList.size());//为ViewPager设置缓存页数，若不设置，默认的为2，就会有一个会被重绘
 
+        //透明状态栏
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+                    | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.TRANSPARENT);
+        }
+
         //启动程序默认选中第一个item
         viewPager.setCurrentItem(0);
         tabStatusImg.setImageResource(R.drawable.ic_status_selected);
         tabSettingImg.setImageResource(R.drawable.ic_setting);
         tabMeImg.setImageResource(R.drawable.ic_me);
         tabStatusText.setTextColor(Color.parseColor("#018ff1"));
-        tabSettingText.setTextColor(Color.parseColor("#737373"));
-        tabMeText.setTextColor(Color.parseColor("#737373"));
+        tabSettingText.setTextColor(Color.parseColor("#dbdbdb"));
+        tabMeText.setTextColor(Color.parseColor("#dbdbdb"));
 
         if ( !NetworkUtils.isNetworkConnected(this) ) { //检查网络连接
             tvNoNetwork.setVisibility(View.VISIBLE); //显示当前无网络
@@ -230,9 +246,13 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void onReceive(Context context, Intent intent) {
             if (NetworkUtils.isNetworkConnected(MainActivity.this)) { //有网
-                tvNoNetwork.setVisibility(View.GONE);
+                tvNoNetwork.setVisibility(View.GONE); //无网络提示消失
+                Log.i(TAG, "onReceive: " + "开始刷新");
+                MainActivity.stopUpdateData = false;//定时刷新开启
             } else { //没网
-                tvNoNetwork.setVisibility(View.VISIBLE);
+                tvNoNetwork.setVisibility(View.VISIBLE);//顶部显示无网络
+                Log.i(TAG, "onReceive: " + "停止刷新");
+                MainActivity.stopUpdateData = true;//定时刷新关闭
             }
         }
     }
