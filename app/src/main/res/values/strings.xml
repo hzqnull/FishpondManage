@@ -22,7 +22,8 @@
     <string name="turbidity">浊度</string>
     <string name="oxygen">含氧</string>
     <string name="ph">  PH</string>
-    <string name="water_depth">水深</string>
+    <string name="sensor_depth">深度</string>
+    <string name="water_level">水位</string>
     <string name="oxygen_pump">氧气泵</string>
     <string name="lift_pump">抽水泵</string>
     <string name="waterflood_pump">注水泵</string>

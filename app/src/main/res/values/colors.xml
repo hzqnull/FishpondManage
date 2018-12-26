@@ -4,6 +4,7 @@
     <color name="btn_pressed_bg">#0164cc</color>
     <color name="colorPrimaryDark">#018ff1</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="light_gray">#888888</color>
     <color name="gray">#737373</color>
     <color name="white">#ffffff</color>
     <color name="bg_gray">#f0f2f8</color>

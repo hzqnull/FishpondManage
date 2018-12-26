@@ -27,7 +27,9 @@ import com.meizhuo.fishpondmanage.activity.MainActivity;
 import com.meizhuo.fishpondmanage.utils.NetworkUtils;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.Callback;
+import com.zhy.http.okhttp.callback.StringCallback;
 
+import java.io.IOException;
 import java.util.Random;
 
 import okhttp3.Call;
@@ -57,24 +59,53 @@ public class ShowStatusFragment extends Fragment {
     private TextView mtvOxyStatus;
     private TextView mtvPH;
     private TextView mtvPHStatus;
-    private TextView mtvWaterDepth;
-    private TextView mtvWaterDepthStatus;
+    private TextView mtvWaterLevel;
+    private TextView mtvWaterLevelStatus;
     private TextView mtvLocation;
     private TextView mtvSensorDepth;
     private Button mbtnConnectMonitor;
 
+    private RefreshReceiver refreshReceiver;
+
+    public static float mMaxTemp, mMinTemp, mMaxTur, mMinTur, mMaxOxy, mMinOxy, mMaxPH, mMinPH, mMaxWaterLevel, mMinWaterLevel;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-    Thread updateData; //更新数据线程
     private boolean hasWarn = false;//用来判断是否已有警告通知的flag
-    private boolean exit = false; //标记是否fragment被销毁
 
     public ShowStatusFragment() {
         // Required empty public constructor
+    }
+
+    /**
+     * 设置上下限
+     *
+     * @param maxTemp
+     * @param minTemp
+     * @param maxTur
+     * @param minTur
+     * @param maxOxy
+     * @param minOxy
+     * @param maxPH
+     * @param minPH
+     * @param maxWaterLevel
+     * @param minWaterLevel
+     */
+    public static void setMinMax(float maxTemp, float minTemp, float maxTur, float minTur, float maxOxy, float minOxy,
+                                 float maxPH, float minPH, float maxWaterLevel, float minWaterLevel) {
+        mMaxTemp = maxTemp;
+        mMinTemp = minTemp;
+        mMaxTur = maxTur;
+        mMinTur = minTur;
+        mMaxOxy = maxOxy;
+        mMinOxy = minOxy;
+        mMaxPH = maxPH;
+        mMinPH = minPH;
+        mMaxWaterLevel = maxWaterLevel;
+        mMinWaterLevel = minWaterLevel;
     }
 
     /**
@@ -103,84 +134,65 @@ public class ShowStatusFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        //开启定时刷新线程
-        updateData = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while ( !exit ) {
-                    if ( !MainActivity.stopUpdateData ) { //判断是否要刷新
-                        sendOkHttpRequest();
-                        Log.i(TAG, "run: " + "我刷。。。");
-                        try {
-                            Thread.sleep(5000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        });
-        updateData.start();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("refresh_status_fragment");
+        refreshReceiver = new RefreshReceiver();
+        Context context = getContext();
+        if (context != null) {
+            context.registerReceiver(refreshReceiver, intentFilter); //注册广播
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        exit = true; //fragment被销毁，线程结束
+        Context context = getContext();
+        if (context != null) {
+            context.unregisterReceiver(refreshReceiver); //取消注册广播
+        }
     }
 
-    /**
-     * 发送请求并刷新数据
-     */
-    private void sendOkHttpRequest() {
+    private class RefreshReceiver extends BroadcastReceiver {
 
-        OkHttpUtils.get()
-                .url("http://111.230.38.90/test/wyu102")
-                .addParams("str", "wyu") //参数未定
-                .build()
-                .execute(new Callback() {
-                    @Override
-                    public Object parseNetworkResponse(Response response, int id) throws Exception {
-//                        Log.i(TAG, "parseNetworkResponse: " + response.body().string()); //测试用。。。
-                        return null;
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String response = intent.getStringExtra("data");
+            if (response != null && (!response.equals(""))) {
+                String datas[] = null;
+                String regex = "\\s+";
+                datas = response.split(regex); //分割字符串
+
+                mtvSensorDepth.setText(datas[1]);
+                mtvTem.setText(datas[2]);
+                mtvTur.setText(datas[3]);
+                mtvOxy.setText(datas[4]);
+                mtvPH.setText(datas[5]);
+                mtvWaterLevel.setText(datas[6]);
+                try {
+                    float depth = Float.parseFloat(datas[1]);
+                    float tem = Float.parseFloat(datas[2]);
+                    float tur = Float.parseFloat(datas[3]);
+                    float oxy = Float.parseFloat(datas[4]);
+                    float ph = Float.parseFloat(datas[5]);
+                    float lev = Float.parseFloat(datas[6]);
+                } catch (NumberFormatException e) {
+                    Log.e(TAG, "onResponse: " + e.toString());
+                    Context c = getContext();
+                    if (c != null) {
+                        Toast.makeText(context, "传入的数据格式有误", Toast.LENGTH_SHORT).show();
                     }
-
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        Log.e(TAG, "onError: 出错啦\n" + e.toString() );
-                    }
-
-                    @Override
-                    public void onResponse(Object response, int id) {
-                        //和上面的parseNetworkResponse函数的response有什么区别
-
-                        updateUI(); //刷新获得新数据后进行显示
-                        //测试用
-                        Random random = new Random();
-                        int num = random.nextInt(24) + 15;
-                        Log.i(TAG, "onResponse: " + "随机温度为" + num);
-                        mtvTem.setText(String.valueOf(num));
-
-                        double tem = Double.parseDouble(mtvTem.getText().toString());
-                        double tur = Double.parseDouble(mtvTur.getText().toString());
-                        double oxy = Double.parseDouble(mtvOxy.getText().toString());
-                        double ph = Double.parseDouble(mtvPH.getText().toString());
-                        double waterDepth = Double.parseDouble(mtvWaterDepth.getText().toString());
-                        judge(tem, tur, oxy, ph, waterDepth); //刷新数据后判断数据是否异常
-                    }
-                });
-    }
-
-    /**
-     * 更新数据后显示
-     */
-    private void updateUI() {
+                }
+            }
+            judge(Float.valueOf(mtvTem.getText().toString()), Float.valueOf(mtvTur.getText().toString()),
+                    Float.valueOf(mtvOxy.getText().toString()), Float.valueOf(mtvPH.getText().toString()),
+                    Float.valueOf(mtvWaterLevel.getText().toString()));
+        }
     }
 
     /**
      * 更新数据后判断是否异常，异常时发通知
      */
-    private void judge(double tem, double tur, double oxy, double ph, double waterDepth) {
+    private void judge(float tem, float tur, float oxy, float ph, float waterLevel) {
         Context context = getContext();
         //得到通知管理者
         NotificationManager notificationManager = null;
@@ -188,7 +200,137 @@ public class ShowStatusFragment extends Fragment {
             notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         }
 
-        if (tem > 33) { //数据异常
+        judgeTemp(tem, context, notificationManager);
+        judgeTur(tur, context, notificationManager);
+        judgeOxy(oxy, context, notificationManager);
+        judgePH(ph, context, notificationManager);
+        judgeWaterLevel(waterLevel, context, notificationManager);
+
+    }
+
+    private void judgeWaterLevel(float waterLevel, Context context, NotificationManager notificationManager) {
+        if (waterLevel > mMaxWaterLevel || waterLevel < mMinWaterLevel) { //数据异常
+            if (isAdded()) { //activity重建后，没有context，使用getResource会报错
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mtvWaterLevelStatus.setBackground(getResources().getDrawable(R.drawable.shape_tv_warn_bg)); //背景变红
+                }
+                mtvWaterLevelStatus.setText("异常");
+            }
+            //发送“数据异常”通知
+            if (context != null && notificationManager != null && !hasWarn) {
+                makeNotification(notificationManager, context);
+            }
+        } else { //数据正常
+            mtvWaterLevelStatus.setText("正常");
+            if (isAdded()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mtvWaterLevelStatus.setBackground(getResources().getDrawable(R.drawable.shape_tv_bg)); //activity重建后，没有context，使用getResource会报错
+                }
+            }
+            if (notificationManager != null) {
+//                notificationManager.cancel(1); //数据恢复正常，取消通知
+            }
+            hasWarn = false;
+        }
+    }
+
+    private void judgePH(float ph, Context context, NotificationManager notificationManager) {
+        if (ph > mMaxPH || ph < mMinPH) { //数据异常
+            if (isAdded()) { //activity重建后，没有context，使用getResource会报错
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mtvPHStatus.setBackground(getResources().getDrawable(R.drawable.shape_tv_warn_bg)); //背景变红
+                }
+                mtvPHStatus.setText("异常");
+            }
+            //发送“数据异常”通知
+            if (context != null && notificationManager != null && !hasWarn) {
+                makeNotification(notificationManager, context);
+            }
+        } else { //数据正常
+            mtvPHStatus.setText("正常");
+            if (isAdded()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mtvPHStatus.setBackground(getResources().getDrawable(R.drawable.shape_tv_bg)); //activity重建后，没有context，使用getResource会报错
+                }
+            }
+            if (notificationManager != null) {
+//                notificationManager.cancel(1); //数据恢复正常，取消通知
+            }
+            hasWarn = false;
+        }
+    }
+
+    private void judgeOxy(float oxy, Context context, NotificationManager notificationManager) {
+        if (oxy > mMaxOxy || oxy < mMinOxy) { //数据异常
+            if (isAdded()) { //activity重建后，没有context，使用getResource会报错
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mtvOxyStatus.setBackground(getResources().getDrawable(R.drawable.shape_tv_warn_bg)); //背景变红
+                }
+                mtvOxyStatus.setText("异常");
+            }
+            //发送“数据异常”通知
+            if (context != null && notificationManager != null && !hasWarn) {
+                makeNotification(notificationManager, context);
+            }
+        } else { //数据正常
+            mtvOxyStatus.setText("正常");
+            if (isAdded()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mtvOxyStatus.setBackground(getResources().getDrawable(R.drawable.shape_tv_bg)); //activity重建后，没有context，使用getResource会报错
+                }
+            }
+            if (notificationManager != null) {
+//                notificationManager.cancel(1); //数据恢复正常，取消通知
+            }
+            hasWarn = false;
+        }
+    }
+
+    private void judgeTur(float tur, Context context, NotificationManager notificationManager) {
+        if (tur > mMaxTur || tur < mMinTur) { //数据异常
+            if (isAdded()) { //activity重建后，没有context，使用getResource会报错
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mtvTurStatus.setBackground(getResources().getDrawable(R.drawable.shape_tv_warn_bg)); //背景变红
+                }
+                mtvTurStatus.setText("异常");
+            }
+            //发送“数据异常”通知
+            if (context != null && notificationManager != null && !hasWarn) {
+                makeNotification(notificationManager, context);
+            }
+        }  else { //数据正常
+            mtvTurStatus.setText("正常");
+            if (isAdded()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mtvTurStatus.setBackground(getResources().getDrawable(R.drawable.shape_tv_bg)); //activity重建后，没有context，使用getResource会报错
+                }
+            }
+            if (notificationManager != null) {
+//                notificationManager.cancel(1); //数据恢复正常，取消通知
+            }
+            hasWarn = false;
+        }
+    }
+
+    private void makeNotification(NotificationManager notificationManager, Context context) {
+        //创建一个通知
+        Notification notification = new NotificationCompat.Builder(context)
+                .setContentTitle("鱼塘养殖系统数据异常")
+                .setContentText("请尽快处理")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .setAutoCancel(true)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setWhen(System.currentTimeMillis())
+                .build();
+                notificationManager.notify(1, notification); //弹出通知
+        hasWarn = true;
+    }
+
+    private void judgeTemp(float tem, Context context, NotificationManager notificationManager) {
+        Log.i(TAG, "judgeTemp: MaxTemp:" + mMaxTemp);
+        Log.i(TAG, "judgeTemp: CurTemp:" + tem);
+        if (tem > mMaxTemp || tem < mMinTemp) { //数据异常
             if (isAdded()) { //activity重建后，没有context，使用getResource会报错
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     mtvTemStatus.setBackground(getResources().getDrawable(R.drawable.shape_tv_warn_bg)); //背景变红
@@ -196,24 +338,9 @@ public class ShowStatusFragment extends Fragment {
                 mtvTemStatus.setText("异常");
             }
             //发送“数据异常”通知
-            if (context != null) {
-                //创建一个通知
-                Notification notification = new NotificationCompat.Builder(context)
-                        .setContentTitle("鱼塘养殖系统数据异常")
-                        .setContentText("请尽快处理")
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                        .setAutoCancel(true)
-                        .setDefaults(NotificationCompat.DEFAULT_ALL)
-                        .setWhen(System.currentTimeMillis())
-                        .build();
-
-                if (notificationManager != null && !hasWarn) {
-                    notificationManager.notify(1, notification); //弹出通知
-                    hasWarn = true;
-                }
+            if (context != null && notificationManager != null && !hasWarn) {
+                makeNotification(notificationManager, context);
             }
-
         } else { //数据正常
             mtvTemStatus.setText("正常");
             if (isAdded()) {
@@ -222,7 +349,7 @@ public class ShowStatusFragment extends Fragment {
                 }
             }
             if (notificationManager != null) {
-                notificationManager.cancel(1); //数据恢复正常，取消通知
+//                notificationManager.cancel(1); //数据恢复正常，取消通知
             }
             hasWarn = false;
         }
@@ -242,8 +369,8 @@ public class ShowStatusFragment extends Fragment {
         mtvOxyStatus = view.findViewById(R.id.tv_oxygen_state);
         mtvPH = view.findViewById(R.id.tv_ph_value);
         mtvPHStatus = view.findViewById(R.id.tv_ph_state);
-        mtvWaterDepth = view.findViewById(R.id.tv_water_depth_value);
-        mtvWaterDepthStatus = view.findViewById(R.id.tv_water_depth_state);
+        mtvWaterLevel = view.findViewById(R.id.tv_water_level_value);
+        mtvWaterLevelStatus = view.findViewById(R.id.tv_water_level_state);
         mtvLocation = view.findViewById(R.id.tv_location_value);
         mtvSensorDepth = view.findViewById(R.id.tv_sensor_depth);
         mbtnConnectMonitor = view.findViewById(R.id.btn_connect_monitor);

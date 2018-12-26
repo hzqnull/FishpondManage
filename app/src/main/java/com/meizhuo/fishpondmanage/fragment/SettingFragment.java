@@ -1,9 +1,14 @@
 package com.meizhuo.fishpondmanage.fragment;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.meizhuo.fishpondmanage.R;
@@ -18,11 +24,14 @@ import com.meizhuo.fishpondmanage.activity.MainActivity;
 import com.meizhuo.fishpondmanage.utils.NetworkUtils;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.Callback;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.Random;
 
 import okhttp3.Call;
 import okhttp3.Response;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,11 +49,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
 
     private static final String TAG = "SettingFragment";
 
-    private Button mbtnSetTemp;
-    private Button mbtnSetTur;
-    private Button mbtnSetOxygen;
-    private Button mbtnSetPH;
-    private Button mbtnSetWaterDepth;
+    private Button mbtnSet;
     private Button mbtnSetOxygenPump;
     private Button mbtnSetLiftPump;
     private Button mbtnSetWaterfloodPump;
@@ -57,11 +62,15 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
     private EditText metMaxOxygen;
     private EditText metMinPH;
     private EditText metMaxPH;
-    private EditText metMinWaterDepth;
-    private EditText metMaxWaterDepth;
-    private Button mbtnFocusable;//用于获取焦点，使其他输入框失去焦点
+    private EditText metMinWaterLevel;
+    private EditText metMaxWaterLevel;
 
-    private Thread updateData; //更新数据的线程
+    private LinearLayout mlySetting;
+    private Context mContext;
+    private RefreshReceiver refreshReceiver;
+    private boolean oxyPumpIsOpen = false;
+    private boolean liftPumpIsOpen = false;
+    private boolean waterfloodPumpIsOpen = false;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -99,57 +108,18 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        //创建更新数据的线程
-        updateData = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    if ( !MainActivity.stopUpdateData ) {
-                        sendGetOkHttpRequest();
-                        try {
-                            Thread.sleep(5000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        });
-        updateData.start();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("refresh_setting_fragment");
+        RefreshReceiver refreshReceiver = new RefreshReceiver();
+        Context context = getContext();
+        if (context != null){
+            context.registerReceiver(refreshReceiver, intentFilter); //注册广播
+        }
     }
 
-    /**
-     * 发送请求，得到并设置上下限
-     */
-    private void sendGetOkHttpRequest() {
-        OkHttpUtils.get()
-                .url("http://111.230.38.90/test/wyu102")
-                .addParams("str", "wyu") //测试用
-                .build()
-                .execute(new Callback() {
-                    @Override
-                    public Object parseNetworkResponse(Response response, int id) throws Exception {
-                        return null;
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        Log.e(TAG, "onError: " + e.toString());
-                    }
-
-                    @Override
-                    public void onResponse(Object response, int id) {
-                        setMinMax();
-                    }
-                });
-    }
-
-    /**
-     * 传入上下限，设置到界面
-     */
-    private void setMinMax() {
-        Random random = new Random();
-        metMaxTemp.setText(String.valueOf(random.nextInt(10) + 19));
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -158,11 +128,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_setting, container, false);
 
-        mbtnSetTemp = view.findViewById(R.id.btn_set_temperature);
-        mbtnSetTur = view.findViewById(R.id.btn_set_turbidity);
-        mbtnSetOxygen = view.findViewById(R.id.btn_set_oxygen);
-        mbtnSetPH = view.findViewById(R.id.btn_set_ph);
-        mbtnSetWaterDepth = view.findViewById(R.id.btn_set_water_depth);
+        mbtnSet = view.findViewById(R.id.btn_set);
         mbtnSetOxygenPump = view.findViewById(R.id.btn_set_oxygen_pump);
         mbtnSetLiftPump = view.findViewById(R.id.btn_set_lift_pump);
         mbtnSetWaterfloodPump = view.findViewById(R.id.btn_set_waterflood_pump);
@@ -175,15 +141,11 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
         metMaxTur = view.findViewById(R.id.et_turbidity_max);
         metMinPH = view.findViewById(R.id.et_ph_min);
         metMaxPH = view.findViewById(R.id.et_ph_max);
-        metMinWaterDepth = view.findViewById(R.id.et_water_depth_min);
-        metMaxWaterDepth = view.findViewById(R.id.et_water_depth_max);
-        mbtnFocusable = view.findViewById(R.id.btn_focusable);
+        metMinWaterLevel = view.findViewById(R.id.et_water_level_min);
+        metMaxWaterLevel = view.findViewById(R.id.et_water_level_max);
+        mlySetting = view.findViewById(R.id.ly_setting);
 
-        mbtnSetTemp.setOnClickListener(this);
-        mbtnSetTur.setOnClickListener(this);
-        mbtnSetOxygen.setOnClickListener(this);
-        mbtnSetPH.setOnClickListener(this);
-        mbtnSetWaterDepth.setOnClickListener(this);
+        mbtnSet.setOnClickListener(this);
         mbtnSetOxygenPump.setOnClickListener(this);
         mbtnSetLiftPump.setOnClickListener(this);
         mbtnSetWaterfloodPump.setOnClickListener(this);
@@ -198,8 +160,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
         metMaxOxygen.setOnFocusChangeListener(this);
         metMinPH.setOnFocusChangeListener(this);
         metMaxPH.setOnFocusChangeListener(this);
-        metMinWaterDepth.setOnFocusChangeListener(this);
-        metMaxWaterDepth.setOnFocusChangeListener(this);
+        metMinWaterLevel.setOnFocusChangeListener(this);
+        metMaxWaterLevel.setOnFocusChangeListener(this);
 
         return view;
     }
@@ -220,6 +182,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+
+        mContext = context;
     }
 
     @Override
@@ -230,25 +194,92 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
 
     @Override
     public void onClick(View view) {
+        Context context = getContext();
+
         switch (view.getId()) {
-            case R.id.btn_set_temperature: //设置温度警戒值
-                sendPostOkHttpRequest("temmin", "temmax", metMinTemp.getText().toString(), metMaxTemp.getText().toString());
-                mbtnFocusable.setFocusable(true);
-                break;
-            case R.id.btn_set_turbidity:
-                sendPostOkHttpRequest("turmin", "turmax", metMinTur.getText().toString(), metMaxTur.getText().toString());
-                break;
-            case R.id.btn_set_oxygen:
-                sendPostOkHttpRequest("oxymin", "oxymax", metMinOxygen.getText().toString(), metMaxOxygen.getText().toString());
-                break;
-            case R.id.btn_set_ph:
-                sendPostOkHttpRequest("phmin", "phmax", metMinPH.getText().toString(), metMaxPH.getText().toString());
-                break;
-            case R.id.btn_set_water_depth:
-                Toast.makeText(getContext(), "设置成功", Toast.LENGTH_SHORT).show();
+            case R.id.btn_set:
+                if (Double.parseDouble(metMinTemp.getText().toString()) >= Double.parseDouble(metMaxTemp.getText().toString())
+                        || Double.parseDouble(metMinTur.getText().toString()) >= Double.parseDouble(metMaxTur.getText().toString())
+                        || Double.parseDouble(metMinOxygen.getText().toString()) >= Double.parseDouble(metMaxOxygen.getText().toString())
+                        ||Double.parseDouble(metMinPH.getText().toString()) >= Double.parseDouble(metMaxPH.getText().toString())
+                        ||Double.parseDouble(metMinWaterLevel.getText().toString()) >= Double.parseDouble(metMaxWaterLevel.getText().toString())) {
+                    if (context != null) {
+                        Toast.makeText(context, "输入的上下限有误", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                }
+                String datas = "T" + " " + metMaxTemp.getText().toString() + " " + metMinTemp.getText().toString() + " "
+                        + metMaxTur.getText().toString() + " " + metMinTur.getText().toString() + " "
+                        + metMaxOxygen.getText().toString() + " " + metMinOxygen.getText().toString() + " "
+                        + metMaxPH.getText().toString() + " " + metMinPH.getText().toString() + " "
+                        + metMaxWaterLevel.getText().toString() + " " + metMinWaterLevel.getText().toString();
+                sendPostOkHttpRequest(datas);
+
+                mlySetting.requestFocus();
                 break;
             case R.id.btn_set_oxygen_pump:
-                Toast.makeText(getContext(), "氧气泵", Toast.LENGTH_SHORT).show();
+                if ( !oxyPumpIsOpen ) {
+                    OkHttpUtils.get()
+                            .url("http://111.230.38.90:9507")
+                            .addParams("message", "send")
+                            .addParams("data", "M 1")
+                            .build()
+                            .execute(new StringCallback() {
+                                @Override
+                                public void onError(Call call, Exception e, int id) {
+//                                    Toast.makeText(getContext(), "开启失败", Toast.LENGTH_SHORT).show();
+//                                    Log.e(TAG, "onError: 出错了" + e.toString() );
+                                    //将就将就
+                                    Toast.makeText(getContext(), "开启成功", Toast.LENGTH_SHORT).show();
+                                    if (isAdded()) {
+                                        mbtnSetOxygenPump.setBackgroundResource(R.drawable.selector_btn_bg);
+                                    }
+                                    mbtnSetOxygenPump.setText("关闭");
+                                    oxyPumpIsOpen = true;
+                                }
+
+                                @Override
+                                public void onResponse(String response, int id) {
+                                    Toast.makeText(getContext(), "开启成功", Toast.LENGTH_SHORT).show();
+                                    Log.i(TAG, "onResponse: 服务器返回：" + response);
+                                    if (isAdded()) {
+                                        mbtnSetOxygenPump.setBackgroundResource(R.drawable.selector_btn_bg);
+                                    }
+                                    mbtnSetOxygenPump.setText("关闭");
+                                    oxyPumpIsOpen = true;
+                                }
+                            });
+                } else {
+                    OkHttpUtils.get()
+                            .url("http://111.230.38.90:9507")
+                            .addParams("data", "M 0")
+                            .build()
+                            .execute(new StringCallback() {
+                                @Override
+                                public void onError(Call call, Exception e, int id) {
+//                                    Toast.makeText(getContext(), "关闭失败", Toast.LENGTH_SHORT).show();
+//                                    Log.e(TAG, "onError: 出错了" + e.toString() );
+                                    //将就将就
+                                    Toast.makeText(getContext(), "关闭成功", Toast.LENGTH_SHORT).show();
+                                    if (isAdded()) {
+                                        mbtnSetOxygenPump.setBackgroundResource(R.drawable.selector_btn_bg_gray);
+                                    }
+                                    mbtnSetOxygenPump.setText("开启");
+                                    oxyPumpIsOpen = false;
+                                }
+
+                                @Override
+                                public void onResponse(String response, int id) {
+                                    Toast.makeText(getContext(), "关闭成功", Toast.LENGTH_SHORT).show();
+                                    Log.i(TAG, "onResponse: 服务器返回：" + response);
+                                    if (isAdded()) {
+                                        mbtnSetOxygenPump.setBackgroundResource(R.drawable.selector_btn_bg_gray);
+                                    }
+                                    mbtnSetOxygenPump.setText("开启");
+                                    oxyPumpIsOpen = false;
+                                }
+                            });
+                }
                 break;
             case R.id.btn_set_lift_pump:
                 Toast.makeText(getContext(), "抽水泵", Toast.LENGTH_SHORT).show();
@@ -268,66 +299,84 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
     /**
      * 发送网络请求
      *
-     * @param min 最小值key
-     * @param max 最大值key
-     * @param minValue 最小值value
-     * @param maxValue 最大值value
+     * @param datas
      */
-    private void sendPostOkHttpRequest(String min, String max, String minValue, String maxValue) {
+    private void sendPostOkHttpRequest(String datas) {
 
             if ( !NetworkUtils.isNetworkConnected(getContext()) ) { //检查网络连接
                 Toast.makeText(getContext(), "当前没有网络连接", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if (Double.parseDouble(minValue) < Double.parseDouble(maxValue)) {
-            OkHttpUtils.post()
-                    .url("http://111.230.38.90/test/wyu102"
-                    )
-                    .addParams(min, minValue)
-                    .addParams(max, maxValue)
-                    .build()
-                    .execute(new Callback() {
-                        @Override
-                        public Object parseNetworkResponse(Response response, int id) throws Exception {
-                            Log.e(TAG, "parseNetworkResponse: " + response.body().string());
-                            return null;
-                        }
+        OkHttpUtils.get()
+                .url("http://111.230.38.90:9507") // URL
+                .addParams("message", "send")
+                .addParams("data", datas)
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+//                        Log.e(TAG, "onError: " + e.toString() );
+//                        Toast.makeText(getContext(), "设置失败", Toast.LENGTH_SHORT).show();  //用http轮询websocket的服务器，只能将就一下了
 
-                        @Override
-                        public void onError(Call call, Exception e, int id) {
-                            Toast.makeText(getContext(), "设置失败", Toast.LENGTH_SHORT).show();
-                            Log.e(TAG, "onError: " + e.toString());
-                        }
+//                        Log.i(TAG, "onResponse: " + "发送设置请求后服务器返回：" + response);
+                        Toast.makeText(getContext(), "设置成功", Toast.LENGTH_SHORT).show();
 
-                        @Override
-                        public void onResponse(Object response, int id) {
-                            Toast.makeText(getContext(), "设置成功", Toast.LENGTH_SHORT).show();
+                        float maxTemp = Float.parseFloat(metMaxTemp.getText().toString());
+                        float minTemp = Float.parseFloat(metMinTemp.getText().toString());
+                        float maxTur = Float.parseFloat(metMaxTur.getText().toString());
+                        float minTur = Float.parseFloat(metMinTur.getText().toString());
+                        float maxOxygen = Float.parseFloat(metMaxOxygen.getText().toString());
+                        float minOxygen =Float.parseFloat(metMinOxygen.getText().toString());
+                        float maxPH = Float.parseFloat(metMaxPH.getText().toString());
+                        float minPH = Float.parseFloat(metMinPH.getText().toString());
+                        float maxWaterLevel = Float.parseFloat(metMaxWaterLevel.getText().toString());
+                        float minWaterLevel = Float.parseFloat(metMinWaterLevel.getText().toString());
+                        //更新数据到ShowStatusFragment
+                        ShowStatusFragment.setMinMax(maxTemp, minTemp, maxTur, minTur, maxOxygen, minOxygen, maxPH, minPH, maxWaterLevel, minWaterLevel);
+                    }
 
-                            //收起软键盘
-                            Context context = getContext();
-                            InputMethodManager imm = null;
-                            if (context != null) {
-                                imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                                if (imm != null) {
-                                    if (imm.isActive()) {
-                                        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
-                                    }
-                                }
-                            }
-                        }
-                    });
-        } else {
-            Toast.makeText(getContext(), "输入的上下限有误", Toast.LENGTH_SHORT).show();
-        }
+                    @Override
+                    public void onResponse(String response, int id) {
+                        Log.i(TAG, "onResponse: " + "发送设置请求后服务器返回：" + response);
+                        Toast.makeText(getContext(), "设置成功", Toast.LENGTH_SHORT).show();
+
+                        float maxTemp = Float.parseFloat(metMaxTemp.getText().toString());
+                        float minTemp = Float.parseFloat(metMinTemp.getText().toString());
+                        float maxTur = Float.parseFloat(metMaxTur.getText().toString());
+                        float minTur = Float.parseFloat(metMinTur.getText().toString());
+                        float maxOxygen = Float.parseFloat(metMaxOxygen.getText().toString());
+                        float minOxygen =Float.parseFloat(metMinOxygen.getText().toString());
+                        float maxPH = Float.parseFloat(metMaxPH.getText().toString());
+                        float minPH = Float.parseFloat(metMinPH.getText().toString());
+                        float maxWaterLevel = Float.parseFloat(metMaxWaterLevel.getText().toString());
+                        float minWaterLevel = Float.parseFloat(metMinWaterLevel.getText().toString());
+                        //更新数据到ShowStatusFragment
+                        ShowStatusFragment.setMinMax(maxTemp, minTemp, maxTur, minTur, maxOxygen, minOxygen, maxPH, minPH, maxWaterLevel, minWaterLevel);
+
+//                        //收起软键盘
+//                        Context context = getContext();
+//                        InputMethodManager imm = null;
+//                        if (context != null) {
+//                            imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+//                            if (imm != null) {
+//                                if (imm.isActive()) {
+//                                    imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+//                                }
+//                            }
+//                        }
+                    }
+                });
     }
 
     @Override
     public void onFocusChange(View view, boolean b) {
         if (b) {
             MainActivity.stopUpdateData = true; //EditText得到焦点，停止更新数据，防止输入的数据被修改
+            Log.i(TAG, "onFocusChange: " + "停止刷新");
         } else {
             MainActivity.stopUpdateData = false;//EditText失去焦点，继续更新
+            Log.i(TAG, "onFocusChange: " + "开始刷新");
         }
     }
 
@@ -345,5 +394,62 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
         void onFragmentInteraction(String str);
+    }
+
+    private class RefreshReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "onReceive: ");
+            String response = intent.getStringExtra("data");
+            String datas[] = null;
+            String regex = "\\s+";
+            datas = response.split(regex); //分割字符串
+
+            metMaxTemp.setText(datas[1]);
+            metMinTemp.setText(datas[2]);
+            metMaxTur.setText(datas[3]);
+            metMinTur.setText(datas[4]);
+            metMaxOxygen.setText(datas[5]);
+            metMinOxygen.setText(datas[6]);
+            metMaxPH.setText(datas[7]);
+            metMinPH.setText(datas[8]);
+            metMaxWaterLevel.setText(datas[9]);
+            metMinWaterLevel.setText(datas[10]);
+            try {
+                float maxTemp = Float.parseFloat(datas[1]);
+                float minTemp = Float.parseFloat(datas[2]);
+                float maxTur = Float.parseFloat(datas[3]);
+                float minTur = Float.parseFloat(datas[4]);
+                float maxOxygen = Float.parseFloat(datas[5]);
+                float minOxygen = Float.parseFloat(datas[6]);
+                float maxPH = Float.parseFloat(datas[7]);
+                float minPH = Float.parseFloat(datas[8]);
+                float maxWaterLevel = Float.parseFloat(datas[9]);
+                float minWaterLevel = Float.parseFloat(datas[10]);
+                //更新数据到ShowStatusFragment
+                ShowStatusFragment.setMinMax(maxTemp, minTemp, maxTur, minTur, maxOxygen, minOxygen, maxPH, minPH, maxWaterLevel, minWaterLevel);
+                Intent i = new Intent("refresh_status_fragment");
+                context.sendBroadcast(i);
+
+//                SharedPreferences sharedPreferences = context.getSharedPreferences("min_max", Context.MODE_PRIVATE);
+//                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                editor.putFloat("max_temp", maxTemp);
+//                editor.putFloat("min_temp", minTemp);
+//                editor.putFloat("max_tur", maxTur);
+//                editor.putFloat("min_tur", minTur);
+//                editor.putFloat("max_oxy", maxOxygen);
+//                editor.putFloat("min_oxy", minOxygen);
+//                editor.putFloat("max_ph", maxPH);
+//                editor.putFloat("min_ph", minPH);
+//                editor.putFloat("max_water_depth", maxWaterDepth);
+//                editor.putFloat("min_water_depth", minWaterDepth);
+//                editor.apply();
+
+            } catch (NumberFormatException e) {
+                Log.e(TAG, "onResponse: " + e.toString());
+                Toast.makeText(context, "传入的数据格式有误", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

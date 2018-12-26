@@ -77,7 +77,7 @@
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
                     android:background="@drawable/shape_tv_bg"
-                    android:text="33.2"
+                    android:text="0"
                     android:textSize="20sp"
                     android:textColor="@color/white"
                     android:gravity="center"/>
@@ -143,7 +143,7 @@
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
                     android:background="@drawable/shape_tv_bg"
-                    android:text="5.2"
+                    android:text="0"
                     android:textSize="20sp"
                     android:textColor="@color/white"
                     android:gravity="center"/>
@@ -209,7 +209,7 @@
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
                     android:background="@drawable/shape_tv_bg"
-                    android:text="5.9"
+                    android:text="0"
                     android:textSize="20sp"
                     android:textColor="@color/white"
                     android:gravity="center"/>
@@ -275,7 +275,7 @@
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
                     android:background="@drawable/shape_tv_bg"
-                    android:text="7.1"
+                    android:text="0"
                     android:textSize="20sp"
                     android:textColor="@color/white"
                     android:gravity="center"/>
@@ -329,18 +329,18 @@
                     android:layout_width="0dp"
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
-                    android:text="@string/water_depth"
+                    android:text="@string/water_level"
                     android:textSize="20sp"
                     android:textColor="@color/white"
                     android:gravity="center"/>
 
                 <TextView
-                    android:id="@+id/tv_water_depth_value"
+                    android:id="@+id/tv_water_level_value"
                     android:layout_width="0dp"
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
                     android:background="@drawable/shape_tv_bg"
-                    android:text="23"
+                    android:text="0"
                     android:textSize="20sp"
                     android:textColor="@color/white"
                     android:gravity="center"/>
@@ -349,7 +349,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="cm"
+                    android:text="m"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     android:layout_marginLeft="10dp"
@@ -364,7 +364,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/tv_water_depth_state"
+                    android:id="@+id/tv_water_level_state"
                     android:layout_width="0dp"
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
@@ -418,7 +418,7 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:background="@drawable/shape_tv_bg"
-                android:text="23.7N 116E"
+                android:text="0N 0E"
                 android:textSize="20sp"
                 android:textColor="@color/white"
                 android:gravity="center"
@@ -438,7 +438,7 @@
                 android:gravity="left"
                 android:paddingLeft="37dp"
                 android:paddingStart="37dp"
-                android:text="传感器深度"
+                android:text="@string/sensor_depth"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 
@@ -449,7 +449,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/shape_tv_bg"
                 android:gravity="center"
-                android:text="100"
+                android:text="0"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 

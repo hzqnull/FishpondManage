@@ -30,9 +30,13 @@ import com.meizhuo.fishpondmanage.fragment.MeFragment;
 import com.meizhuo.fishpondmanage.fragment.SettingFragment;
 import com.meizhuo.fishpondmanage.fragment.ShowStatusFragment;
 import com.meizhuo.fishpondmanage.utils.NetworkUtils;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
 
 import static android.content.ContentValues.TAG;
 
@@ -62,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements
     private NetworkChangeReceiver receiver;
 
     public static boolean stopUpdateData; //是否停止更新数据的flag
+    private Thread updateData;
+    public static boolean exit = false;
 
     @Override
     protected void onDestroy() {
@@ -167,6 +173,63 @@ public class MainActivity extends AppCompatActivity implements
         filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         receiver = new NetworkChangeReceiver();
         registerReceiver(receiver, filter);
+
+
+        //开启定时刷新线程
+        updateData = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while ( !exit ) {
+                    if ( !MainActivity.stopUpdateData ) { //判断是否要刷新
+                        sendOkHttpRequest();
+//                        Log.i(TAG, "run: " + "我刷。。。请求数据");
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+        updateData.start();
+    }
+
+    /**
+     * 发送请求
+     */
+    private void sendOkHttpRequest() {
+
+        OkHttpUtils.get()
+                .url("http://111.230.38.90:9507") // URL
+                .addParams("message", "take")
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        Log.e(TAG, "onError: 出错了" + e.toString());
+                    }
+
+                    @Override
+                    public void onResponse(String response, int id) {
+                        Log.i(TAG, "onResponse:服务器返回" + response);
+                        if (!response.equals("nothing new")) {
+                            String datas[] = null;
+                            String regex = "\\s+";
+                            datas = response.split(regex); //分割字符串
+
+                            if (datas[0].equals("R")) { //标识头是“R”
+                                Intent intent = new Intent("refresh_status_fragment");
+                                intent.putExtra("data", response);
+                                sendBroadcast(intent); //发送广播
+                            } else if (datas[0].equals("T")) {
+                                Intent intent = new Intent("refresh_setting_fragment");
+                                intent.putExtra("data", response);
+                                sendBroadcast(intent);
+                            }
+                        }
+                    }
+                });
     }
 
     /**
