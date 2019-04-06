@@ -204,7 +204,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
                         ||Double.parseDouble(metMinPH.getText().toString()) >= Double.parseDouble(metMaxPH.getText().toString())
                         ||Double.parseDouble(metMinWaterLevel.getText().toString()) >= Double.parseDouble(metMaxWaterLevel.getText().toString())) {
                     if (context != null) {
-                        Toast.makeText(context, "输入的上下限有误", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "上限必须大于下限", Toast.LENGTH_SHORT).show();
                     }
                     break;
                 }
@@ -229,7 +229,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
                                 public void onError(Call call, Exception e, int id) {
 //                                    Toast.makeText(getContext(), "开启失败", Toast.LENGTH_SHORT).show();
 //                                    Log.e(TAG, "onError: 出错了" + e.toString() );
-                                    //将就将就
+                                    //将就将就，用http轮询websocket服务器会返回500
                                     Toast.makeText(getContext(), "开启成功", Toast.LENGTH_SHORT).show();
                                     if (isAdded()) {
                                         mbtnSetOxygenPump.setBackgroundResource(R.drawable.selector_btn_bg);
@@ -252,6 +252,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
                 } else {
                     OkHttpUtils.get()
                             .url("http://111.230.38.90:9507")
+                            .addParams("message", "send")
                             .addParams("data", "M 0")
                             .build()
                             .execute(new StringCallback() {
@@ -259,7 +260,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener, V
                                 public void onError(Call call, Exception e, int id) {
 //                                    Toast.makeText(getContext(), "关闭失败", Toast.LENGTH_SHORT).show();
 //                                    Log.e(TAG, "onError: 出错了" + e.toString() );
-                                    //将就将就
+                                    //将就将就，用http轮询websocket服务器会返回500
                                     Toast.makeText(getContext(), "关闭成功", Toast.LENGTH_SHORT).show();
                                     if (isAdded()) {
                                         mbtnSetOxygenPump.setBackgroundResource(R.drawable.selector_btn_bg_gray);
